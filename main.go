@@ -15,6 +15,7 @@ import "image"
 import "bytes"
 import "image/jpeg"
 import "github.com/nfnt/resize"
+import "github.com/disintegration/imaging"
 //import "time"
 
 func readChoice(s string) int {
@@ -81,7 +82,7 @@ func main() {
 	size := frames[choice-1]
 
 	f, w, h, err := cam.SetImageFormat(format, uint32(size.MaxWidth), uint32(size.MaxHeight))
-	err = cam.SetFramerate(15.0)
+	err = cam.SetFramerate(1.0)
 
 	if err != nil {
 		panic(err.Error())
@@ -128,11 +129,23 @@ func main() {
 				fmt.Println(err, err2)
 			}
 
+			flipImage, err3 := imaging.Open("./img.jpeg")
+			if err3 != nil {
+				fmt.Println("ERR", err3)
+			}
+
+			newNewImage := imaging.FlipH(flipImage)
+			err3 = imaging.Save(newNewImage, "./img.jpeg")
+			if err3 != nil {
+				fmt.Println("ERR", err3)
+			}
+
 			converter := convert.NewImageConverter()
 			imageFilename := "./img.jpeg"
 			convertOptions := convert.DefaultOptions
 			convertOptions.FitScreen = true
-			convertOptions.Colored = false
+			convertOptions.Colored = true
+
 			asciiString := converter.ImageFile2ASCIIString(imageFilename, &convertOptions)
 	
 			fmt.Printf("\033[2J")
